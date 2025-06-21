@@ -1,5 +1,7 @@
 # Jewelry Visualizer Widget
 
+🔗 **Live Demo**: https://sharonchen679.github.io/jewelry-visualizer-v2/widget/
+
 A modern, responsive jewelry stone visualizer with accurate sizing using CSS mm units and optional calibration features. Perfect for jewelry designers and customers to visualize stone combinations with precise measurements.
 
 ## Features
