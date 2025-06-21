@@ -25,13 +25,13 @@ const CONFIG = {
         sessionStorageKey: 'jewelry-visualizer-admin-session'
     },
 
-    // Asset paths (absolute paths from server root)
+    // Asset paths (relative paths for GitHub Pages deployment)
     assets: {
-        centerStones: '/assets/center-stones/',
-        sideStones: '/assets/side-stones/',
-        longSideStones: '/assets/long-side-stones/',
-        info: '/assets/info/',
-        manifest: '/assets/manifest.json'
+        centerStones: '../assets/center-stones/',
+        sideStones: '../assets/side-stones/',
+        longSideStones: '../assets/long-side-stones/',
+        info: '../assets/info/',
+        manifest: '../assets/manifest.json'
     },
 
     // Info file names
