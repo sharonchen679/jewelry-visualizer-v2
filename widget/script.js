@@ -216,9 +216,10 @@ class JewelryVisualizer {
             let aspectRatio;
             
             // Determine format based on loading type:
-            // - Center stones: dimension=width, sizes=heights, so aspectRatio = width/height
-            // - Long side stones: dimension=width, sizes=heights, so aspectRatio = width/height (same as center stones)
-            // - Regular side stones: dimension=height, sizes=widths, so aspectRatio = width/height
+            // Format is always: "title: short-side | long-side, long-side1, long-side2, .."
+            // - Center stones: short-side=width, long-side=height, so aspectRatio = width/height
+            // - Long side stones: short-side=width, long-side=height, so aspectRatio = width/height (same as center stones)
+            // - Regular side stones: short-side=height, long-side=width, so aspectRatio = width/height
             if (this.loadingCenterStones || this.loadingLongSideStones) {
                 // Center stones and long side stones: dimension is width, firstSize is height
                 aspectRatio = parseFloat(dimension) / firstSize; // width/height
@@ -235,7 +236,8 @@ class JewelryVisualizer {
                 baseDimension: parseFloat(dimension), // width for center/long side stones, height for regular side stones
                 sizes: displaySizes, // Use sizes without the first pair
                 aspectRatio, // Always width/height ratio for consistency
-                imagePath: this.generateImagePath(title)
+                imagePath: this.generateImagePath(title),
+                isLongSideStone: this.loadingLongSideStones // Flag to distinguish long side stones
             });
         });
 
@@ -520,8 +522,19 @@ class JewelryVisualizer {
         
         // Get selected side stone size
         const selectedSideStoneSize = this.getSelectedSideStoneSize() || this.selectedSideStone.sizes[0];
-        const sideStoneWidth = selectedSideStoneSize;
-        const sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
+        
+        // Calculate side stone dimensions
+        let sideStoneWidth, sideStoneHeight;
+        
+        if (this.selectedSideStone.isLongSideStone) {
+            // For long side stones: size represents height, calculate width
+            sideStoneHeight = selectedSideStoneSize;
+            sideStoneWidth = sideStoneHeight * this.selectedSideStone.aspectRatio;
+        } else {
+            // For regular side stones: size represents width, calculate height
+            sideStoneWidth = selectedSideStoneSize;
+            sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
+        }
         
         // Create center stone
         const centerStone = document.createElement('img');
@@ -672,8 +685,17 @@ class JewelryVisualizer {
                 dot.dataset.size = size;
 
             // Calculate side stone dimensions
-            const sideStoneWidth = size;
-            const sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
+            let sideStoneWidth, sideStoneHeight;
+            
+            if (this.selectedSideStone.isLongSideStone) {
+                // For long side stones: size represents height, calculate width
+                sideStoneHeight = size;
+                sideStoneWidth = sideStoneHeight * this.selectedSideStone.aspectRatio;
+            } else {
+                // For regular side stones: size represents width, calculate height
+                sideStoneWidth = size;
+                sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
+            }
                 
             // Position dot
             dot.style.top = `${currentPosition}px`;
@@ -729,7 +751,15 @@ class JewelryVisualizer {
             // Calculate next position - use the larger of the two stones for spacing
             const nextSize = this.selectedSideStone.sizes[sizeIndex + 1];
             if (nextSize) {
-                const nextStoneHeight = nextSize / this.selectedSideStone.aspectRatio;
+                let nextStoneHeight;
+                if (this.selectedSideStone.isLongSideStone) {
+                    // For long side stones: nextSize represents height
+                    nextStoneHeight = nextSize;
+                } else {
+                    // For regular side stones: nextSize represents width, calculate height
+                    nextStoneHeight = nextSize / this.selectedSideStone.aspectRatio;
+                }
+                
                 const currentStoneHeight = sideStoneHeight;
                 const maxStoneHeight = Math.max(currentStoneHeight, nextStoneHeight);
                 
