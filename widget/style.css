@@ -9,6 +9,13 @@
     --text-color: #333;
     --error-color: #dc3545;
     --success-color: #28a745;
+
+    /* Luxury Gold Colors */
+    --gold-primary: #d4af37;
+    --gold-secondary: #f4e4bc;
+    --gold-accent: #b8860b;
+    --gold-light: #fff8dc;
+    --gold-dark: #996515;
 }
 
 * {
