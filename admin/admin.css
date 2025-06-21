@@ -1,0 +1,58 @@
+/* Admin Panel Styles */
+/* All admin-related CSS moved from main widget styles */
+
+.admin-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 2000;
+    min-width: 300px;
+    cursor: grab;
+    user-select: none; /* Prevent text selection during drag */
+}
+
+.admin-panel.hidden {
+    display: none;
+}
+
+.admin-panel:active {
+    cursor: grabbing; /* When being dragged */
+}
+
+.admin-content {
+    padding: 30px;
+}
+
+.admin-content h3 {
+    margin: 0 0 20px 0;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.admin-content button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer; /* Already default, but explicit for clarity */
+    font-size: 14px;
+    user-select: none; /* Prevent text selection on buttons */
+}
+
+.admin-content button:hover {
+    background: #0056b3;
+}
+
+.admin-content button:last-child {
+    background: #6c757d;
+    margin-bottom: 0;
+} 

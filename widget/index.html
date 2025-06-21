@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jewelry Visualizer Widget</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../admin/admin.css">
+</head>
+<body>
+    <div id="jewelry-visualizer" class="jewelry-visualizer">
+        <!-- Error container -->
+        <div id="error-container" class="error-container"></div>
+        
+        <!-- Calibration panel (collapsible) -->
+        <div id="calibration-panel" class="calibration-panel collapsed">
+            <button id="calibration-toggle" class="calibration-toggle">⚙️</button>
+            <div class="calibration-content">
+                <h4>Calibration</h4>
+                <p>Drag the corner to match your real credit card size</p>
+                <div id="credit-card-container" class="credit-card-container">
+                    <div id="credit-card" class="credit-card">
+                        <div class="card-content">Credit Card<br>85.6mm × 53.98mm</div>
+                    </div>
+                    <div id="resize-handle" class="resize-handle">
+                        <button class="precision-btn" data-direction="up">▲</button>
+                        <button class="precision-btn" data-direction="down">▼</button>
+                    </div>
+                </div>
+                <div class="calibration-info">
+                    <span>Current ratio: <span id="calibration-ratio">1.0</span></span>
+                    <button id="reset-calibration">Reset to Default</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main widget content -->
+        <div class="widget-content">
+            <!-- Center stone selection -->
+            <div class="control-section">
+                <h3 id="center-stone-title" class="clickable-title">
+                    <span data-letter="s">S</span><span data-letter="e">e</span><span data-letter="l">l</span><span data-letter="e">e</span><span data-letter="c">c</span><span data-letter="t">t</span> 
+                    <span data-letter="c">C</span><span data-letter="e">e</span><span data-letter="n">n</span><span data-letter="t">t</span><span data-letter="e">e</span><span data-letter="r">r</span> 
+                    <span data-letter="s">S</span><span data-letter="t">t</span><span data-letter="o">o</span><span data-letter="n">n</span><span data-letter="e">e</span>
+                </h3>
+                
+                <div id="center-stone-options" class="stone-options">
+                    <!-- Will be populated by JavaScript -->
+                    <div class="loading">Loading stones...</div>
+                </div>
+                
+                <div id="center-stone-sizes" class="size-options">
+                    <!-- Will be populated after stone selection -->
+                </div>
+            </div>
+
+            <!-- Display section -->
+            <div id="display-section" class="display-section">
+                <!-- Will be populated after size selection -->
+            </div>
+        </div>
+
+        <!-- Admin panel (will be injected after authentication) -->
+        <div id="admin-panel" class="admin-panel hidden">
+            <!-- Content injected dynamically for security -->
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="../admin/admin.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
