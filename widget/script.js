@@ -7,9 +7,12 @@ class JewelryVisualizer {
         this.isAdminMode = false;
         this.centerStones = [];
         this.sideStones = [];
+        this.longSideStones = [];
         this.selectedCenterStone = null;
         this.selectedCenterStoneSize = null;
         this.selectedSideStone = null;
+        this.loadingCenterStones = false;
+        this.loadingLongSideStones = false;
         
         // Initialize admin module
         this.admin = new JewelryVisualizerAdmin(this);
@@ -148,7 +151,8 @@ class JewelryVisualizer {
         try {
             await Promise.all([
                 this.loadCenterStones(),
-                this.loadSideStones()
+                this.loadSideStones(),
+                this.loadLongSideStones()
             ]);
         } catch (error) {
             throw new Error('Failed to load stone data: ' + error.message);
@@ -159,7 +163,9 @@ class JewelryVisualizer {
         const response = await fetch(CONFIG.assets.info + CONFIG.infoFiles.centerStones);
         const text = await response.text();
         
+        this.loadingCenterStones = true; // Flag to indicate we're loading center stones
         this.centerStones = this.parseStoneData(text);
+        this.loadingCenterStones = false;
         
         // Set the correct image paths for center stones
         this.centerStones.forEach(stone => {
@@ -171,11 +177,26 @@ class JewelryVisualizer {
         const response = await fetch(CONFIG.assets.info + CONFIG.infoFiles.sideStones);
         const text = await response.text();
         
+        this.loadingCenterStones = false; // Flag to indicate we're loading side stones
         this.sideStones = this.parseStoneData(text);
         
         // Set the correct image paths for side stones
         this.sideStones.forEach(stone => {
             stone.imagePath = CONFIG.assets.sideStones + stone.imagePath;
+        });
+    }
+
+    async loadLongSideStones() {
+        const response = await fetch(CONFIG.assets.info + CONFIG.infoFiles.longSideStones);
+        const text = await response.text();
+        
+        this.loadingLongSideStones = true; // Flag to indicate we're loading long side stones
+        this.longSideStones = this.parseStoneData(text);
+        this.loadingLongSideStones = false;
+        
+        // Set the correct image paths for long side stones
+        this.longSideStones.forEach(stone => {
+            stone.imagePath = CONFIG.assets.longSideStones + stone.imagePath;
         });
     }
 
@@ -190,18 +211,30 @@ class JewelryVisualizer {
             const [dimension, sizesStr] = data.split('|').map(s => s.trim());
             const sizes = sizesStr.split(',').map(s => parseFloat(s.trim()));
 
-            const width = parseFloat(dimension);
-            const firstHeight = sizes[0];
-            const aspectRatio = width / firstHeight; // width/height ratio
+            // Calculate aspect ratio consistently as width/height
+            const firstSize = sizes[0];
+            let aspectRatio;
+            
+            // Determine format based on loading type:
+            // - Center stones: dimension=width, sizes=heights, so aspectRatio = width/height
+            // - Long side stones: dimension=width, sizes=heights, so aspectRatio = width/height (same as center stones)
+            // - Regular side stones: dimension=height, sizes=widths, so aspectRatio = width/height
+            if (this.loadingCenterStones || this.loadingLongSideStones) {
+                // Center stones and long side stones: dimension is width, firstSize is height
+                aspectRatio = parseFloat(dimension) / firstSize; // width/height
+            } else {
+                // Regular side stones: dimension is height, firstSize is width
+                aspectRatio = firstSize / parseFloat(dimension); // width/height
+            }
 
-            // Skip the first pair of dimensions (used internally for proportions)
+            // Skip the first pair of dimensions for display purposes (internal use only)
             const displaySizes = sizes.slice(1);
 
             stones.push({
                 title,
-                baseDimension: width,
-                sizes: displaySizes, // Skip first height for display
-                aspectRatio,
+                baseDimension: parseFloat(dimension), // width for center/long side stones, height for regular side stones
+                sizes: displaySizes, // Use sizes without the first pair
+                aspectRatio, // Always width/height ratio for consistency
                 imagePath: this.generateImagePath(title)
             });
         });
@@ -487,8 +520,8 @@ class JewelryVisualizer {
         
         // Get selected side stone size
         const selectedSideStoneSize = this.getSelectedSideStoneSize() || this.selectedSideStone.sizes[0];
-        const sideStoneHeight = selectedSideStoneSize; // This is the height from sizes array
-        const sideStoneWidth = sideStoneHeight * this.selectedSideStone.aspectRatio; // Calculate proportional width
+        const sideStoneWidth = selectedSideStoneSize;
+        const sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
         
         // Create center stone
         const centerStone = document.createElement('img');
@@ -524,7 +557,6 @@ class JewelryVisualizer {
         const imageDisplayHeight = `calc(${sideStoneHeight * 4}mm * var(--calibration-ratio))`;
         const imageDisplayWidth = `calc(${sideStoneWidth * 4}mm * var(--calibration-ratio))`;
         
-        // Container dimensions need to account for rotation: swap width/height for containers
         leftStoneContainer.style.width = rightStoneContainer.style.width = imageDisplayHeight;
         leftStoneContainer.style.height = rightStoneContainer.style.height = imageDisplayWidth;
         
@@ -549,7 +581,10 @@ class JewelryVisualizer {
     }
 
     renderSideStoneOptions(container) {
-        this.sideStones.forEach((sideStone, index) => {
+        // Combine regular side stones and long side stones
+        const allSideStones = [...this.sideStones, ...this.longSideStones];
+        
+        allSideStones.forEach((sideStone, index) => {
             const stoneWrapper = document.createElement('div');
             stoneWrapper.className = 'side-stone-wrapper';
             stoneWrapper.dataset.sideIndex = index; // Use unique attribute for side stones
@@ -600,7 +635,10 @@ class JewelryVisualizer {
         document.querySelectorAll('.side-stone-wrapper').forEach(wrapper => wrapper.classList.remove('selected'));
         document.querySelector(`[data-side-index="${index}"]`).classList.add('selected');
         
-        this.selectedSideStone = this.sideStones[index];
+        // Get the selected stone from the combined array
+        const allSideStones = [...this.sideStones, ...this.longSideStones];
+        this.selectedSideStone = allSideStones[index];
+        
         this.updateSlider();
         this.updateInfoSection();
     }
@@ -634,8 +672,8 @@ class JewelryVisualizer {
                 dot.dataset.size = size;
 
             // Calculate side stone dimensions
-            const sideStoneHeight = size; // This is the height from sizes array
-            const sideStoneWidth = sideStoneHeight * this.selectedSideStone.aspectRatio; // Calculate proportional width
+            const sideStoneWidth = size;
+            const sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
                 
             // Position dot
             dot.style.top = `${currentPosition}px`;
@@ -664,15 +702,12 @@ class JewelryVisualizer {
                 rightStone.className = 'side-stone';
                 rightStone.alt = `${size}mm`;
 
-            // For rotated side stones: set image dimensions based on the stone's natural orientation
-            // The image will be rotated 90 degrees, so we need to account for that in container sizing
             const imageDisplayHeight = `calc(${sideStoneHeight}mm * var(--calibration-ratio))`;
             const imageDisplayWidth = `calc(${sideStoneWidth}mm * var(--calibration-ratio))`;
                 
             leftStone.style.width = rightStone.style.width = imageDisplayWidth;
             leftStone.style.height = rightStone.style.height = imageDisplayHeight;
             
-            // Container dimensions need to account for rotation: swap width/height for containers
             leftStoneContainer.style.width = rightStoneContainer.style.width = imageDisplayHeight;
             leftStoneContainer.style.height = rightStoneContainer.style.height = imageDisplayWidth;
             
@@ -694,20 +729,16 @@ class JewelryVisualizer {
             // Calculate next position - use the larger of the two stones for spacing
             const nextSize = this.selectedSideStone.sizes[sizeIndex + 1];
             if (nextSize) {
-                const nextStoneHeight = nextSize;
-                const nextStoneWidth = nextSize * this.selectedSideStone.aspectRatio;
+                const nextStoneHeight = nextSize / this.selectedSideStone.aspectRatio;
                 const currentStoneHeight = sideStoneHeight;
-                const currentStoneWidth = sideStoneWidth;
-                
-                // For rotated stones, use the width (which becomes height after rotation) for spacing
-                const maxStoneWidth = Math.max(currentStoneWidth, nextStoneWidth);
+                const maxStoneHeight = Math.max(currentStoneHeight, nextStoneHeight);
                 
                 // Convert mm to pixels for spacing calculation
                 const mmToPixelRatio = this.calibrationRatio * 3.7795275591; // Approximate mm to pixels
-                const stoneWidthPx = maxStoneWidth * mmToPixelRatio;
+                const stoneHeightPx = maxStoneHeight * mmToPixelRatio;
                 
                 // Position for next dot: current position + half current stone + half next stone + minimum spacing
-                currentPosition += (stoneWidthPx / 2) + (stoneWidthPx / 2) + minSpacing;
+                currentPosition += (stoneHeightPx / 2) + (stoneHeightPx / 2) + minSpacing;
             }
         });
         

@@ -29,6 +29,7 @@ const CONFIG = {
     assets: {
         centerStones: '/assets/center-stones/',
         sideStones: '/assets/side-stones/',
+        longSideStones: '/assets/long-side-stones/',
         info: '/assets/info/',
         manifest: '/assets/manifest.json'
     },
@@ -36,7 +37,8 @@ const CONFIG = {
     // Info file names
     infoFiles: {
         centerStones: 'center-stones-sizes.txt',
-        sideStones: 'side-stones-sizes.txt'
+        sideStones: 'side-stones-sizes.txt',
+        longSideStones: 'long-side-stones-sizes.txt'
     },
 
     // UI settings
