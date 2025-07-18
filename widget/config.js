@@ -64,17 +64,17 @@ const CONFIG = {
             infoFile: 'diamond-sizes.txt'
         },
         emerald: {
-            name: 'Emeralds',
+            name: 'Emerald',
             path: 'gems/emerald',
             infoFile: 'emerald-sizes.txt'
         },
         sapphire: {
-            name: 'Sapphires',
+            name: 'Sapphire',
             path: 'gems/sapphire',
             infoFile: 'sapphire-sizes.txt'
         },
         ruby: {
-            name: 'Rubies',
+            name: 'Ruby',
             path: 'gems/ruby',
             infoFile: 'ruby-sizes.txt'
         }
