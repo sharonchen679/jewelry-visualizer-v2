@@ -118,4 +118,4 @@ Long Hexa: 0.352 | 0.713, 5, 5.5, 6, 6.5, 7, 7.5
 - Edge 16+
 
 
-run locally with: npx serve -l 8000 widget
+run locally with: npx http-server --port=8000
