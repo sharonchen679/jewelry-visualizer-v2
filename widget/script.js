@@ -246,7 +246,15 @@ class JewelryVisualizer {
 
     generateImagePath(title) {
         // Simple: generate image path based on stone title (preserve original capitalization)
-        const filename = title.split(' ').join('-') + '.png';
+
+        let extension = '.png';
+
+        // Special handling for Trapeziod Brilliant which uses .gif extension
+        if (title === 'Trapeziod Brilliant') {
+            extension = '.gif';
+        }
+
+        const filename = title.split(' ').join('-') + extension;
         
         // Return path - caller knows which asset folder to use
         return filename;
