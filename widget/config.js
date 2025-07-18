@@ -26,30 +26,58 @@ const CONFIG = {
     },
 
     assets: {
-    // Asset paths (GitHub Pages - relative to repository root)
-    // production code
+        // Asset paths (GitHub Pages - relative to repository root)
+        // production code
+        // diamonds: '/jewelry-visualizer-v2/assets/center-stones/diamonds/',
+        // gems: '/jewelry-visualizer-v2/assets/center-stones/gems/',
+        // sideStones: '/jewelry-visualizer-v2/assets/side-stones/',
+        // longSideStones: '/jewelry-visualizer-v2/assets/long-side-stones/',
+        // info: '/jewelry-visualizer-v2/assets/info/',
+        // manifest: '/jewelry-visualizer-v2/assets/manifest.json'
 
-        centerStones: '/jewelry-visualizer-v2/assets/center-stones/',
-        sideStones: '/jewelry-visualizer-v2/assets/side-stones/',
-        longSideStones: '/jewelry-visualizer-v2/assets/long-side-stones/',
-        info: '/jewelry-visualizer-v2/assets/info/',
-        manifest: '/jewelry-visualizer-v2/assets/manifest.json'
-
-    // Asset paths (Localhost development - relative to server root)
-    // local code - should be commented out for production
-    //     centerStones: '/assets/center-stones/',
-    //     sideStones: '/assets/side-stones/',
-    //     longSideStones: '/assets/long-side-stones/',
-    //     info: '/assets/info/',
-    //     manifest: '/assets/manifest.json'
+        // Asset paths (Localhost development - relative to server root)
+        // local code - should be commented out for production
+        diamonds: '/assets/center-stones/diamonds/',
+        gems: '/assets/center-stones/gems/',
+        sideStones: '/assets/side-stones/',
+        longSideStones: '/assets/long-side-stones/',
+        info: '/assets/info/',
+        manifest: '/assets/manifest.json'
 
     },
 
     // Info file names
     infoFiles: {
-        centerStones: 'center-stones-sizes.txt',
+        diamonds: 'diamond-sizes.txt',
+        emerald: 'emerald-sizes.txt',
+        sapphire: 'sapphire-sizes.txt',
+        ruby: 'ruby-sizes.txt',
         sideStones: 'side-stones-sizes.txt',
         longSideStones: 'long-side-stones-sizes.txt'
+    },
+
+    // Stone types configuration
+    stoneTypes: {
+        diamonds: {
+            name: 'Diamonds',
+            path: 'diamonds',
+            infoFile: 'diamond-sizes.txt'
+        },
+        emerald: {
+            name: 'Emeralds',
+            path: 'gems/emerald',
+            infoFile: 'emerald-sizes.txt'
+        },
+        sapphire: {
+            name: 'Sapphires',
+            path: 'gems/sapphire',
+            infoFile: 'sapphire-sizes.txt'
+        },
+        ruby: {
+            name: 'Rubies',
+            path: 'gems/ruby',
+            infoFile: 'ruby-sizes.txt'
+        }
     },
 
     // UI settings
