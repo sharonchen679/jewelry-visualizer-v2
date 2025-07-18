@@ -116,3 +116,6 @@ Long Hexa: 0.352 | 0.713, 5, 5.5, 6, 6.5, 7, 7.5
 - Firefox 60+
 - Safari 12+
 - Edge 16+
+
+
+run locally with: npx serve -l 8000 widget
