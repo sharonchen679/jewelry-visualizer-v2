@@ -314,6 +314,10 @@ class JewelryVisualizer {
 
         this.selectedStoneType = stoneType;
 
+        // Always hide the sizes section when stone type changes
+        document.getElementById('center-stone-sizes').style.display = 'none';
+
+
         if (stoneType === 'diamonds') {
             // Hide gem selection if it was visible
             document.getElementById('gem-type-section').style.display = 'none';
@@ -321,6 +325,8 @@ class JewelryVisualizer {
             this.populateCenterStones();
             this.showCenterStoneSection();
         } else if (stoneType === 'gems') {
+            // Hide center stone section for gems (comes later after gem type selection)
+            document.getElementById('center-stone-section').style.display = 'none';
             this.renderGemTypeSelection();
         }
     }
@@ -365,6 +371,10 @@ class JewelryVisualizer {
         document.querySelector(`[data-gem-type="${gemType}"]`).classList.add('selected');
 
         this.selectedGemType = gemType;
+        
+        // Hide the sizes section when gem type is chosen
+        document.getElementById('center-stone-sizes').style.display = 'none';
+        
         this.populateCenterStones();
         this.showCenterStoneSection();
     }
