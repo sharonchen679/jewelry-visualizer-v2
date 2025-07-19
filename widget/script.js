@@ -177,7 +177,7 @@ class JewelryVisualizer {
             
             // Set correct image paths dynamically using config
             stones.forEach(stone => {
-                stone.imagePath = `/assets/center-stones/${config.path}/${stone.imagePath}`;
+                stone.imagePath = CONFIG.assets[stoneType] + stone.imagePath;
             });
             
             this.allStoneData[stoneType] = stones;
