@@ -28,6 +28,7 @@ const CONFIG = {
     assets: {
         // Asset paths (GitHub Pages - relative to repository root)
         // production code
+        // typeSelection: '/jewelry-visualizer-v2/assets/center-stones/type-selection/',
         // diamonds: '/jewelry-visualizer-v2/assets/center-stones/diamonds/',
         // gems: '/jewelry-visualizer-v2/assets/center-stones/gems/',
         // sideStones: '/jewelry-visualizer-v2/assets/side-stones/',
@@ -37,6 +38,7 @@ const CONFIG = {
 
         // Asset paths (Localhost development - relative to server root)
         // local code - should be commented out for production
+        typeSelection: '/assets/center-stones/type-selection/',
         diamonds: '/assets/center-stones/diamonds/',
         gems: '/assets/center-stones/gems/',
         sideStones: '/assets/side-stones/',
