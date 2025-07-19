@@ -36,21 +36,40 @@
 
         <!-- Main widget content -->
         <div class="widget-content">
-            <!-- Center stone selection -->
+            <!-- Main control section with skeleton structure -->
             <div class="control-section">
-                <h3 id="center-stone-title" class="clickable-title">
-                    <span data-letter="s">S</span><span data-letter="e">e</span><span data-letter="l">l</span><span data-letter="e">e</span><span data-letter="c">c</span><span data-letter="t">t</span> 
-                    <span data-letter="c">C</span><span data-letter="e">e</span><span data-letter="n">n</span><span data-letter="t">t</span><span data-letter="e">e</span><span data-letter="r">r</span> 
-                    <span data-letter="s">S</span><span data-letter="t">t</span><span data-letter="o">o</span><span data-letter="n">n</span><span data-letter="e">e</span>
-                </h3>
-                
-                <div id="center-stone-options" class="stone-options">
-                    <!-- Will be populated by JavaScript -->
-                    <div class="loading">Loading stones...</div>
+                <!-- Stone type selection -->
+                <div id="stone-type-section">
+                    <h3 class="title">Select Stone Type</h3>
+                    <div id="stone-type-options" class="stone-options">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
                 </div>
-                
-                <div id="center-stone-sizes" class="size-options">
-                    <!-- Will be populated after stone selection -->
+
+                <!-- Gem type selection -->
+                <div id="gem-type-section" style="display: none;">
+                    <h3 class="title">Select Gem Type</h3>
+                    <div id="gem-type-options" class="stone-options">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Center stone selection -->
+                <div id="center-stone-section" style="display: none;">
+                    <h3 id="center-stone-title" class="title clickable-title">
+                        <span data-letter="s">S</span><span data-letter="e">e</span><span data-letter="l">l</span><span data-letter="e">e</span><span data-letter="c">c</span><span data-letter="t">t</span> 
+                        <span data-letter="c">C</span><span data-letter="e">e</span><span data-letter="n">n</span><span data-letter="t">t</span><span data-letter="e">e</span><span data-letter="r">r</span> 
+                        <span data-letter="s">S</span><span data-letter="t">t</span><span data-letter="o">o</span><span data-letter="n">n</span><span data-letter="e">e</span>
+                    </h3>
+                    
+                    <div id="center-stone-options" class="stone-options">
+                        <!-- Will be populated by JavaScript -->
+                        <div class="loading">Loading stones...</div>
+                    </div>
+                    
+                    <div id="center-stone-sizes" class="size-options">
+                        <!-- Will be populated after stone selection -->
+                    </div>
                 </div>
             </div>
 
