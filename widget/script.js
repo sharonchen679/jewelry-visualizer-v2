@@ -14,6 +14,11 @@ class JewelryVisualizer {
         this.loadingCenterStones = false;
         this.loadingLongSideStones = false;
         
+        // Stone type selection
+        this.allStoneData = {}; // Store all loaded stone types
+        this.selectedStoneType = null; // 'diamonds' or 'gems'
+        this.selectedGemType = null; // 'emerald', 'sapphire', 'ruby'
+        
         // Initialize admin module
         this.admin = new JewelryVisualizerAdmin(this);
         
@@ -25,7 +30,7 @@ class JewelryVisualizer {
             this.setupCalibration();
             this.admin.setupPasswordSystem();
             await this.loadStoneData();
-            this.renderCenterStones();
+            this.renderStoneTypeSelection();
             this.setupEventListeners();
         } catch (error) {
             this.showError('Failed to initialize visualizer: ' + error.message);
@@ -160,17 +165,25 @@ class JewelryVisualizer {
     }
 
     async loadCenterStones() {
-        const response = await fetch(CONFIG.assets.info + CONFIG.infoFiles.centerStones);
-        const text = await response.text();
-        
-        this.loadingCenterStones = true; // Flag to indicate we're loading center stones
-        this.centerStones = this.parseStoneData(text);
-        this.loadingCenterStones = false;
-        
-        // Set the correct image paths for center stones
-        this.centerStones.forEach(stone => {
-            stone.imagePath = CONFIG.assets.centerStones + stone.imagePath;
+        // Load all stone types using CONFIG.stoneTypes
+        const loadPromises = Object.keys(CONFIG.stoneTypes).map(async (stoneType) => {
+            const config = CONFIG.stoneTypes[stoneType];
+            const response = await fetch(CONFIG.assets.info + config.infoFile);
+            const text = await response.text();
+            
+            this.loadingCenterStones = true;
+            const stones = this.parseStoneData(text);
+            this.loadingCenterStones = false;
+            
+            // Set correct image paths dynamically using config
+            stones.forEach(stone => {
+                stone.imagePath = `/assets/center-stones/${config.path}/${stone.imagePath}`;
+            });
+            
+            this.allStoneData[stoneType] = stones;
         });
+        
+        await Promise.all(loadPromises);
     }
 
     async loadSideStones() {
@@ -261,6 +274,116 @@ class JewelryVisualizer {
     }
 
     // UI Rendering
+    renderStoneTypeSelection() {
+        const container = document.getElementById('stone-type-options');
+        container.innerHTML = '';
+
+        const stoneTypes = [
+            { key: 'diamonds', name: 'Diamonds', image: 'Diamonds.png' },
+            { key: 'gems', name: 'Gems', image: 'Gems.png' }
+        ];
+
+        stoneTypes.forEach(stoneType => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'stone-wrapper';
+
+            const title = document.createElement('div');
+            title.className = 'stone-title';
+            title.textContent = stoneType.name;
+
+            const option = document.createElement('div');
+            option.className = 'stone-option';
+            option.dataset.stoneType = stoneType.key;
+            option.style.backgroundImage = `url('${CONFIG.assets.typeSelection}${stoneType.image}')`;
+            option.title = stoneType.name;
+
+            option.addEventListener('click', () => {
+                this.selectStoneType(stoneType.key);
+            });
+
+            wrapper.appendChild(title);
+            wrapper.appendChild(option);
+            container.appendChild(wrapper);
+        });
+    }
+
+    selectStoneType(stoneType) {
+        // Update UI selection
+        document.querySelectorAll('#stone-type-options .stone-option').forEach(opt => opt.classList.remove('selected'));
+        document.querySelector(`[data-stone-type="${stoneType}"]`).classList.add('selected');
+
+        this.selectedStoneType = stoneType;
+
+        if (stoneType === 'diamonds') {
+            // Hide gem selection if it was visible
+            document.getElementById('gem-type-section').style.display = 'none';
+            this.selectedGemType = null;
+            this.populateCenterStones();
+            this.showCenterStoneSection();
+        } else if (stoneType === 'gems') {
+            this.renderGemTypeSelection();
+        }
+    }
+
+    renderGemTypeSelection() {
+        const section = document.getElementById('gem-type-section');
+        section.style.display = 'block';
+        
+        const container = document.getElementById('gem-type-options');
+        container.innerHTML = '';
+
+        const gemTypes = ['emerald', 'sapphire', 'ruby'];
+
+        gemTypes.forEach(gemType => {
+            const config = CONFIG.stoneTypes[gemType];
+            const wrapper = document.createElement('div');
+            wrapper.className = 'stone-wrapper';
+
+            const title = document.createElement('div');
+            title.className = 'stone-title';
+            title.textContent = config.name;
+
+            const option = document.createElement('div');
+            option.className = 'stone-option';
+            option.dataset.gemType = gemType;
+            option.style.backgroundImage = `url('${CONFIG.assets.typeSelection}${config.name}.png')`;
+            option.title = config.name;
+
+            option.addEventListener('click', () => {
+                this.selectGemType(gemType);
+            });
+
+            wrapper.appendChild(title);
+            wrapper.appendChild(option);
+            container.appendChild(wrapper);
+        });
+    }
+
+    selectGemType(gemType) {
+        // Update UI selection
+        document.querySelectorAll('#gem-type-options .stone-option').forEach(opt => opt.classList.remove('selected'));
+        document.querySelector(`[data-gem-type="${gemType}"]`).classList.add('selected');
+
+        this.selectedGemType = gemType;
+        this.populateCenterStones();
+        this.showCenterStoneSection();
+    }
+
+    populateCenterStones() {
+        // Populate centerStones based on selection
+        if (this.selectedStoneType === 'diamonds') {
+            this.centerStones = this.allStoneData.diamonds || [];
+        } else if (this.selectedStoneType === 'gems' && this.selectedGemType) {
+            this.centerStones = this.allStoneData[this.selectedGemType] || [];
+        }
+    }
+
+    showCenterStoneSection() {
+        // Show center stone section and render stones
+        document.getElementById('center-stone-section').style.display = 'block';
+        this.renderCenterStones();
+    }
+
     renderCenterStones() {
         const container = document.getElementById('center-stone-options');
         container.innerHTML = '';
