@@ -482,7 +482,7 @@ class JewelryVisualizer {
         });
 
         container.appendChild(sizeGrid);
-        container.classList.add('visible');
+        container.style.display = 'block';
     }
 
     selectCenterStoneSize(size) {
