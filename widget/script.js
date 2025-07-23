@@ -244,12 +244,14 @@ class JewelryVisualizer {
             // Skip the first pair of dimensions for display purposes (internal use only)
             const displaySizes = sizes.slice(1);
 
+            const extension = this.loadingSideStones || this.loadingLongSideStones ? '.gif' : '.png';
+
             stones.push({
                 title,
                 baseDimension: parseFloat(dimension), // width for center/long side stones, height for regular side stones
                 sizes: displaySizes, // Use sizes without the first pair
                 aspectRatio, // Always width/height ratio for consistency
-                imagePath: this.generateImagePath(title),
+                imagePath: this.generateImagePath(title, extension),
                 isLongSideStone: this.loadingLongSideStones // Flag to distinguish long side stones
             });
         });
@@ -257,9 +259,9 @@ class JewelryVisualizer {
         return stones;
     }
 
-    generateImagePath(title) {
+    generateImagePath(title, extension) {
         // Simple: generate image path based on stone title (preserve original capitalization)
-        return title.split(' ').join('-') + '.gif';
+        return title.split(' ').join('-') + extension;
     }
 
     // UI Rendering
