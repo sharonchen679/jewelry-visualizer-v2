@@ -190,8 +190,9 @@ class JewelryVisualizer {
         const response = await fetch(CONFIG.assets.info + CONFIG.infoFiles.sideStones);
         const text = await response.text();
         
-        this.loadingCenterStones = false; // Flag to indicate we're loading side stones
+        this.loadingSideStones = true; // Flag to indicate we're loading side stones
         this.sideStones = this.parseStoneData(text);
+        this.loadingSideStones = false;
         
         // Set the correct image paths for side stones
         this.sideStones.forEach(stone => {
