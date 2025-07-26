@@ -487,10 +487,11 @@ class JewelryVisualizer {
     }
 
     renderDisplaySection() {
-        const container = document.getElementById('display-section');
-        container.innerHTML = '';
+        const container = document.querySelector('.jewelry-visualizer');
+        if (!container) return;
 
-        if (!this.selectedCenterStone || !this.selectedCenterStoneSize) return;
+        // Clear existing content
+        container.innerHTML = '';
 
         // Create side stone selection section
         const sideStoneSection = document.createElement('div');
@@ -517,81 +518,100 @@ class JewelryVisualizer {
         this.renderSlider(sliderSection);
         displayArea.appendChild(sliderSection);
         
-        // Create info section (right side) - placeholder for now
-        const infoSection = document.createElement('div');
-        infoSection.className = 'info-section';
-        
-        // Create details section
-        const detailsSection = document.createElement('div');
-        detailsSection.className = 'details-section';
-        
-        const detailsTitle = document.createElement('h4');
-        detailsTitle.textContent = 'Selected Details';
-        detailsSection.appendChild(detailsTitle);
-        
-        const detailsList = document.createElement('div');
-        detailsList.className = 'details-list';
-        
-        // Center stone details
-        const centerDetails = document.createElement('div');
-        centerDetails.className = 'detail-item';
-        centerDetails.innerHTML = `
-            <strong>Center Stone:</strong> ${this.selectedCenterStone.title} (${this.selectedCenterStoneSize}mm)
-        `;
-        detailsList.appendChild(centerDetails);
-        
-        // Side stone details (will be updated when side stone is selected)
-        const sideDetails = document.createElement('div');
-        sideDetails.className = 'detail-item';
-        sideDetails.id = 'side-stone-details';
-        sideDetails.innerHTML = `
-            <strong>Side Stones:</strong> <span id="side-stone-info">Select a side stone</span>
-        `;
-        detailsList.appendChild(sideDetails);
-        
-        detailsSection.appendChild(detailsList);
-        infoSection.appendChild(detailsSection);
-        
-        // Create large display section
-        const displaySection = document.createElement('div');
-        displaySection.className = 'large-display-section';
-        
-        const displayTitle = document.createElement('h4');
-        displayTitle.textContent = 'Current Match';
-        displaySection.appendChild(displayTitle);
-        
-        const largeDisplay = document.createElement('div');
-        largeDisplay.className = 'large-display';
-        largeDisplay.id = 'large-display';
-        
-        // Initial display (will be updated when side stone is selected)
-        const initialDisplay = document.createElement('div');
-        initialDisplay.className = 'initial-display';
-        initialDisplay.textContent = 'Select a side stone to see the match';
-        largeDisplay.appendChild(initialDisplay);
-        
-        displaySection.appendChild(largeDisplay);
-        infoSection.appendChild(displaySection);
-        
         container.appendChild(sideStoneSection);
         container.appendChild(displayArea);
-        displayArea.appendChild(infoSection);
         container.classList.add('visible');
+        
+        // Create floating footer for large display
+        this.createFloatingFooter();
         
         // Update info section with initial data
         this.updateInfoSection();
     }
 
+    createFloatingFooter() {
+        // Remove existing footer if it exists
+        const existingFooter = document.getElementById('floating-footer');
+        if (existingFooter) {
+            existingFooter.remove();
+        }
+
+        // Create floating footer
+        const footer = document.createElement('div');
+        footer.id = 'floating-footer';
+        footer.className = 'floating-footer';
+        
+        // Create footer content container
+        const footerContent = document.createElement('div');
+        footerContent.className = 'footer-content';
+        
+        // Create info section in footer (left side)
+        const footerInfoSection = document.createElement('div');
+        footerInfoSection.className = 'footer-info-section';
+        
+        const footerDetailsSection = document.createElement('div');
+        footerDetailsSection.className = 'footer-details-section';
+        
+        const footerDetailsTitle = document.createElement('h4');
+        footerDetailsTitle.textContent = 'Current Selection';
+        footerDetailsSection.appendChild(footerDetailsTitle);
+        
+        const footerDetailsList = document.createElement('div');
+        footerDetailsList.className = 'footer-details-list';
+        
+        // Center stone details
+        const footerCenterDetails = document.createElement('div');
+        footerCenterDetails.className = 'footer-detail-item';
+        footerCenterDetails.innerHTML = `
+            <strong>Center Stone:</strong> ${this.selectedCenterStone.title} (${this.selectedCenterStoneSize}mm)
+        `;
+        footerDetailsList.appendChild(footerCenterDetails);
+        
+        // Side stone details (will be updated when side stone is selected)
+        const footerSideDetails = document.createElement('div');
+        footerSideDetails.className = 'footer-detail-item';
+        footerSideDetails.id = 'footer-side-stone-details';
+        footerSideDetails.innerHTML = `
+            <strong>Side Stones:</strong> <span id="footer-side-stone-info">${this.selectedSideStone ? `${this.selectedSideStone.title} (${this.selectedSideStone.sizes[0]}mm)` : 'Select a side stone'}</span>
+        `;
+        footerDetailsList.appendChild(footerSideDetails);
+        
+        footerDetailsSection.appendChild(footerDetailsList);
+        footerInfoSection.appendChild(footerDetailsSection);
+        
+        // Create large display section (center)
+        const footerDisplaySection = document.createElement('div');
+        footerDisplaySection.className = 'footer-display-section';
+        
+        const footerDisplayTitle = document.createElement('h4');
+        footerDisplayTitle.textContent = 'Current Match';
+        footerDisplaySection.appendChild(footerDisplayTitle);
+        
+        const largeDisplay = document.createElement('div');
+        largeDisplay.className = 'large-display';
+        largeDisplay.id = 'large-display';
+        
+        footerDisplaySection.appendChild(largeDisplay);
+        
+        // Assemble footer
+        footerContent.appendChild(footerInfoSection);
+        footerContent.appendChild(footerDisplaySection);
+        footer.appendChild(footerContent);
+        
+        // Add footer to body
+        document.body.appendChild(footer);
+    }
+
     updateInfoSection() {
-        // Update side stone details
-        const sideStoneInfo = document.getElementById('side-stone-info');
-        if (sideStoneInfo && this.selectedSideStone) {
+        // Update side stone details in footer
+        const footerSideStoneInfo = document.getElementById('footer-side-stone-info');
+        if (footerSideStoneInfo && this.selectedSideStone) {
             // Get the selected size based on center stone position
             const selectedSize = this.getSelectedSideStoneSize();
             if (selectedSize) {
-                sideStoneInfo.textContent = `${this.selectedSideStone.title} (${selectedSize}mm)`;
+                footerSideStoneInfo.textContent = `${this.selectedSideStone.title} (${selectedSize}mm)`;
             } else {
-                sideStoneInfo.textContent = `${this.selectedSideStone.title} (select size)`;
+                footerSideStoneInfo.textContent = `${this.selectedSideStone.title} (select size)`;
             }
         }
         
@@ -611,12 +631,12 @@ class JewelryVisualizer {
         let minDistance = Infinity;
         
         const stoneRect = centerStone.getBoundingClientRect();
-        const stoneCenterY = stoneRect.top + stoneRect.height / 2;
+        const stoneCenterX = stoneRect.left + stoneRect.width / 2;
         
         dots.forEach(dot => {
             const dotRect = dot.getBoundingClientRect();
-            const dotCenterY = dotRect.top + dotRect.height / 2;
-            const distance = Math.abs(dotCenterY - stoneCenterY);
+            const dotCenterX = dotRect.left + dotRect.width / 2;
+            const distance = Math.abs(dotCenterX - stoneCenterX);
             
             if (distance < minDistance) {
                 minDistance = distance;
@@ -638,11 +658,7 @@ class JewelryVisualizer {
         largeDisplay.innerHTML = '';
         
         if (!this.selectedSideStone) {
-            const initialDisplay = document.createElement('div');
-            initialDisplay.className = 'initial-display';
-            initialDisplay.textContent = 'Select a side stone to see the match';
-            largeDisplay.appendChild(initialDisplay);
-            return;
+            return; // Don't show anything if no side stone is selected
         }
         
         // Create large display of current match
@@ -787,35 +803,38 @@ class JewelryVisualizer {
         
         this.updateSlider();
         this.updateInfoSection();
+        
+        // Recreate footer with updated info
+        this.createFloatingFooter();
     }
 
     renderSlider(container) {
         if (!this.selectedSideStone) return;
         
-            const sliderTitle = document.createElement('h4');
+        const sliderTitle = document.createElement('h4');
         sliderTitle.textContent = this.selectedSideStone.title;
         container.appendChild(sliderTitle);
 
-            const sliderContainer = document.createElement('div');
-            sliderContainer.className = 'slider-container';
+        const sliderContainer = document.createElement('div');
+        sliderContainer.className = 'slider-container';
 
-            const sliderTrack = document.createElement('div');
-            sliderTrack.className = 'slider-track';
+        const sliderTrack = document.createElement('div');
+        sliderTrack.className = 'slider-track';
 
         // Calculate center stone dimensions
         const centerStoneHeight = this.selectedCenterStoneSize;
         const centerStoneWidth = centerStoneHeight * this.selectedCenterStone.aspectRatio;
         
         // Calculate optimal spacing between dots
-        const titleHeight = 25; // Height for size labels
+        const titleWidth = 50; // Width for size labels
         const minSpacing = 40; // Minimum spacing between dots (increased for comfort)
-        let currentPosition = titleHeight + 20; // Start position
+        let currentPosition = titleWidth + 20; // Start position
 
         // Create dots for each side stone size
         this.selectedSideStone.sizes.forEach((size, sizeIndex) => {
-                const dot = document.createElement('div');
-                dot.className = 'slider-dot';
-                dot.dataset.size = size;
+            const dot = document.createElement('div');
+            dot.className = 'slider-dot';
+            dot.dataset.size = size;
 
             // Calculate side stone dimensions
             let sideStoneWidth, sideStoneHeight;
@@ -830,32 +849,32 @@ class JewelryVisualizer {
                 sideStoneHeight = sideStoneWidth / this.selectedSideStone.aspectRatio;
             }
                 
-            // Position dot
-            dot.style.top = `${currentPosition}px`;
+            // Position dot horizontally
+            dot.style.left = `${currentPosition}px`;
 
-                // Create size title above the dot
-                const sizeTitle = document.createElement('div');
-                sizeTitle.className = 'side-stone-size-title';
-                sizeTitle.textContent = `${size}mm`;
-            sizeTitle.style.top = `${currentPosition - titleHeight}px`;
-                sliderTrack.appendChild(sizeTitle);
+            // Create size title above the dot
+            const sizeTitle = document.createElement('div');
+            sizeTitle.className = 'side-stone-size-title';
+            sizeTitle.textContent = `${size}mm`;
+            sizeTitle.style.left = `${currentPosition - titleWidth/2}px`;
+            sliderTrack.appendChild(sizeTitle);
 
-                // Create side stone images on both sides
-                const leftStoneContainer = document.createElement('div');
-                leftStoneContainer.className = 'side-stone-container left';
-                
-                const rightStoneContainer = document.createElement('div');
-                rightStoneContainer.className = 'side-stone-container right';
+            // Create side stone images on both sides
+            const leftStoneContainer = document.createElement('div');
+            leftStoneContainer.className = 'side-stone-container left';
+            
+            const rightStoneContainer = document.createElement('div');
+            rightStoneContainer.className = 'side-stone-container right';
 
-                const leftStone = document.createElement('img');
+            const leftStone = document.createElement('img');
             leftStone.src = this.selectedSideStone.imagePath;
-                leftStone.className = 'side-stone';
-                leftStone.alt = `${size}mm`;
+            leftStone.className = 'side-stone';
+            leftStone.alt = `${size}mm`;
 
-                const rightStone = document.createElement('img');
+            const rightStone = document.createElement('img');
             rightStone.src = this.selectedSideStone.imagePath;
-                rightStone.className = 'side-stone';
-                rightStone.alt = `${size}mm`;
+            rightStone.className = 'side-stone';
+            rightStone.alt = `${size}mm`;
 
             const imageDisplayHeight = `calc(${sideStoneHeight}mm * var(--calibration-ratio))`;
             const imageDisplayWidth = `calc(${sideStoneWidth}mm * var(--calibration-ratio))`;
@@ -874,59 +893,82 @@ class JewelryVisualizer {
             leftStoneContainer.style.right = `calc(50% + ${gapDistance})`;
             rightStoneContainer.style.left = `calc(50% + ${gapDistance})`;
 
-                leftStoneContainer.appendChild(leftStone);
-                rightStoneContainer.appendChild(rightStone);
+            leftStoneContainer.appendChild(leftStone);
+            rightStoneContainer.appendChild(rightStone);
 
-                dot.appendChild(leftStoneContainer);
-                dot.appendChild(rightStoneContainer);
-                sliderTrack.appendChild(dot);
+            dot.appendChild(leftStoneContainer);
+            dot.appendChild(rightStoneContainer);
+            sliderTrack.appendChild(dot);
             
             // Calculate next position - use the larger of the two stones for spacing
             const nextSize = this.selectedSideStone.sizes[sizeIndex + 1];
             if (nextSize) {
-                let nextStoneHeight;
+                let nextStoneWidth;
                 if (this.selectedSideStone.isLongSideStone) {
-                    // For long side stones: nextSize represents height
-                    nextStoneHeight = nextSize;
+                    // For long side stones: nextSize represents height, calculate width
+                    nextStoneWidth = nextSize * this.selectedSideStone.aspectRatio;
                 } else {
-                    // For regular side stones: nextSize represents width, calculate height
-                    nextStoneHeight = nextSize / this.selectedSideStone.aspectRatio;
+                    // For regular side stones: nextSize represents width
+                    nextStoneWidth = nextSize;
                 }
                 
-                const currentStoneHeight = sideStoneHeight;
-                const maxStoneHeight = Math.max(currentStoneHeight, nextStoneHeight);
+                const currentStoneWidth = sideStoneWidth;
+                const maxStoneWidth = Math.max(currentStoneWidth, nextStoneWidth);
                 
                 // Convert mm to pixels for spacing calculation
                 const mmToPixelRatio = this.calibrationRatio * 3.7795275591; // Approximate mm to pixels
-                const stoneHeightPx = maxStoneHeight * mmToPixelRatio;
+                const stoneWidthPx = maxStoneWidth * mmToPixelRatio;
                 
                 // Position for next dot: current position + half current stone + half next stone + minimum spacing
-                currentPosition += (stoneHeightPx / 2) + (stoneHeightPx / 2) + minSpacing;
+                currentPosition += (stoneWidthPx / 2) + (stoneWidthPx / 2) + minSpacing;
             }
         });
         
-        // Set track height with some padding
-        const trackHeight = currentPosition + 50;
-        sliderTrack.style.height = `${trackHeight}px`;
+        // Set track width with some padding
+        const trackWidth = currentPosition + 50;
+        sliderTrack.style.width = `${trackWidth}px`;
 
-            // Create draggable center stone
-            const centerStone = document.createElement('img');
-            centerStone.src = this.selectedCenterStone.imagePath;
-            centerStone.className = 'center-stone-slider';
-            centerStone.alt = `${this.selectedCenterStoneSize}mm`;
-            
-            centerStone.style.width = `calc(${centerStoneWidth}mm * var(--calibration-ratio))`;
-            centerStone.style.height = `calc(${centerStoneHeight}mm * var(--calibration-ratio))`;
+        // Create draggable center stone
+        const centerStone = document.createElement('img');
+        centerStone.src = this.selectedCenterStone.imagePath;
+        centerStone.className = 'center-stone-slider';
+        centerStone.alt = `${this.selectedCenterStoneSize}mm`;
         
-            // Add drag functionality
-            this.setupCenterStoneDrag(centerStone, sliderTrack);
+        centerStone.style.width = `calc(${centerStoneWidth}mm * var(--calibration-ratio))`;
+        centerStone.style.height = `calc(${centerStoneHeight}mm * var(--calibration-ratio))`;
+    
+        // Add drag functionality
+        this.setupCenterStoneDrag(centerStone, sliderTrack);
 
         // Add click functionality to dots
-            this.setupDotClickHandlers(sliderTrack, centerStone);
+        this.setupDotClickHandlers(sliderTrack, centerStone);
 
-            sliderContainer.appendChild(sliderTrack);
-            sliderContainer.appendChild(centerStone);
+        sliderContainer.appendChild(sliderTrack);
+        sliderContainer.appendChild(centerStone);
         container.appendChild(sliderContainer);
+        
+        // Position center stone on first dot after rendering
+        this.positionCenterStoneOnFirstDot(centerStone, sliderTrack);
+    }
+
+    positionCenterStoneOnFirstDot(centerStone, sliderTrack) {
+        const titleWidth = 50;
+        const firstDot = sliderTrack.querySelector('.slider-dot');
+        if (firstDot) {
+            const dotRect = firstDot.getBoundingClientRect();
+            const trackRect = sliderTrack.getBoundingClientRect();
+            
+            // Get dot position relative to track
+            const dotPositionInTrack = dotRect.left - trackRect.left;
+            
+            // Calculate target position that centers stone on dot
+            const targetLeft = dotPositionInTrack - (centerStone.offsetWidth / 2) + (firstDot.offsetWidth / 2);
+            
+            // Ensure target position respects title area
+            const constrainedTargetLeft = Math.max(titleWidth + 10, targetLeft);
+            
+            centerStone.style.left = `${constrainedTargetLeft}px`;
+        }
     }
 
     updateSlider() {
@@ -934,19 +976,28 @@ class JewelryVisualizer {
         if (sliderSection) {
             sliderSection.innerHTML = '';
             this.renderSlider(sliderSection);
+            
+            // Ensure center stone is positioned on first dot after re-rendering
+            setTimeout(() => {
+                const centerStone = sliderSection.querySelector('.center-stone-slider');
+                const sliderTrack = sliderSection.querySelector('.slider-track');
+                if (centerStone && sliderTrack) {
+                    this.positionCenterStoneOnFirstDot(centerStone, sliderTrack);
+                }
+            }, 0);
         }
     }
 
     setupCenterStoneDrag(centerStone, sliderTrack) {
-        const titleHeight = 25; // Height needed for the title text (same as in renderDisplaySection)
+        const titleWidth = 50; // Width needed for the title text (same as in renderDisplaySection)
         let isDragging = false;
-        let startY = 0;
-        let startTop = 0;
+        let startX = 0;
+        let startLeft = 0;
 
         centerStone.addEventListener('mousedown', (e) => {
             isDragging = true;
-            startY = e.clientY;
-            startTop = parseInt(centerStone.style.top) || (titleHeight + 20); // Start below titles
+            startX = e.clientX;
+            startLeft = parseInt(centerStone.style.left) || (titleWidth + 20); // Start after titles
             // Use CSS class for transition state
             centerStone.classList.add('dragging');
             e.preventDefault();
@@ -955,16 +1006,16 @@ class JewelryVisualizer {
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
 
-            const deltaY = e.clientY - startY;
-            const newTop = startTop + deltaY;
+            const deltaX = e.clientX - startX;
+            const newLeft = startLeft + deltaX;
 
             // Calculate constraints more precisely
-            const minTop = titleHeight + 10; // Keep center stone below titles with some buffer
-            const maxTop = sliderTrack.offsetHeight - centerStone.offsetHeight + 20;
+            const minLeft = titleWidth + 10; // Keep center stone after titles with some buffer
+            const maxLeft = sliderTrack.offsetWidth - centerStone.offsetWidth + 20;
 
             // Constrain movement
-            const constrainedTop = Math.max(minTop, Math.min(maxTop, newTop));
-            centerStone.style.top = `${constrainedTop}px`;
+            const constrainedLeft = Math.max(minLeft, Math.min(maxLeft, newLeft));
+            centerStone.style.left = `${constrainedLeft}px`;
         });
 
         document.addEventListener('mouseup', () => {
@@ -977,14 +1028,14 @@ class JewelryVisualizer {
             let nearestDot = null;
             let minDistance = Infinity;
 
-            // Get center Y position of the dragged stone
+            // Get center X position of the dragged stone
             const stoneRect = centerStone.getBoundingClientRect();
-            const stoneCenterY = stoneRect.top + stoneRect.height / 2;
+            const stoneCenterX = stoneRect.left + stoneRect.width / 2;
 
             dots.forEach(dot => {
                 const dotRect = dot.getBoundingClientRect();
-                const dotCenterY = dotRect.top + dotRect.height / 2;
-                const distance = Math.abs(dotCenterY - stoneCenterY);
+                const dotCenterX = dotRect.left + dotRect.width / 2;
+                const distance = Math.abs(dotCenterX - stoneCenterX);
                 
                 if (distance < minDistance) {
                     minDistance = distance;
@@ -998,18 +1049,18 @@ class JewelryVisualizer {
                 const dotRect = nearestDot.getBoundingClientRect();
                 
                 // Get dot position relative to track
-                const dotPositionInTrack = dotRect.top - trackRect.top;
+                const dotPositionInTrack = dotRect.left - trackRect.left;
                 
                 // Calculate target position that centers stone on dot
-                const targetTop = dotPositionInTrack - (centerStone.offsetHeight / 2) + (nearestDot.offsetHeight / 2);
+                const targetLeft = dotPositionInTrack - (centerStone.offsetWidth / 2) + (nearestDot.offsetWidth / 2);
                 
                 // Ensure target position respects title area
-                const constrainedTargetTop = Math.max(titleHeight + 10, targetTop);
+                const constrainedTargetLeft = Math.max(titleWidth + 10, targetLeft);
                 
                 // Use CSS class for smooth snap animation
                 centerStone.classList.remove('dragging');
                 centerStone.classList.add('snapping');
-                centerStone.style.top = `${constrainedTargetTop}px`;
+                centerStone.style.left = `${constrainedTargetLeft}px`;
                 
                 // Remove transition class after animation
                 setTimeout(() => {
@@ -1096,7 +1147,7 @@ class JewelryVisualizer {
 
     setupDotClickHandlers(sliderTrack, centerStone) {
         const dots = sliderTrack.querySelectorAll('.slider-dot');
-        const titleHeight = 25; // Height needed for the title text (same as in renderDisplaySection)
+        const titleWidth = 50; // Width needed for the title text (same as in renderDisplaySection)
         
         dots.forEach(dot => {
             dot.addEventListener('click', (e) => {
@@ -1108,17 +1159,17 @@ class JewelryVisualizer {
                 const dotRect = dot.getBoundingClientRect();
                 
                 // Get dot position relative to track
-                const dotPositionInTrack = dotRect.top - trackRect.top;
+                const dotPositionInTrack = dotRect.left - trackRect.left;
                 
                 // Calculate target position that centers stone on dot
-                const targetTop = dotPositionInTrack - (centerStone.offsetHeight / 2) + (dot.offsetHeight / 2);
+                const targetLeft = dotPositionInTrack - (centerStone.offsetWidth / 2) + (dot.offsetWidth / 2);
                 
                 // Ensure target position respects title area
-                const constrainedTargetTop = Math.max(titleHeight + 10, targetTop);
+                const constrainedTargetLeft = Math.max(titleWidth + 10, targetLeft);
                 
                 // Apply smooth animation using the same CSS classes as drag snapping
                 centerStone.classList.add('snapping');
-                centerStone.style.top = `${constrainedTargetTop}px`;
+                centerStone.style.left = `${constrainedTargetLeft}px`;
                 
                 // Remove transition class after animation and update info
                 setTimeout(() => {
